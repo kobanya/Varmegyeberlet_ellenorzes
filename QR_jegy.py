@@ -20,10 +20,10 @@ def ellenorzes_api(azonosito):
 # Kamera inicializálása
 cap = cv2.VideoCapture(0)
 
-# Változó az adat tárolásához
-QR_beolvasott = None
+# Változó az azonosító szám tárolásához
+azonosito = None
 
-while QR_beolvasott is None:
+while azonosito is None:
     # Kamera képkockájának olvasása
     ret, frame = cap.read()
 
@@ -31,8 +31,8 @@ while QR_beolvasott is None:
     decoded_objects = decode(frame)
 
     for obj in decoded_objects:
-        # QR-kód adatainak kinyerése és elmentése a változóba
-        QR_beolvasott = obj.data.decode('utf-8')
+        # QR-kód adatainak kinyerése és elmentése az azonosito változóba
+        azonosito = obj.data.decode('utf-8')
         break  # Azonnal kilépünk, ha találtunk egy QR-kódot
 
     # Képernyőn megjelenítés
@@ -47,11 +47,11 @@ cap.release()
 cv2.destroyAllWindows()
 
 # Ha van beolvasott QR-kód
-if QR_beolvasott is not None:
-    print(f'A beolvasott jegy: {QR_beolvasott}')
+if azonosito is not None:
+    print(f'A beolvasott azonosító: {azonosito}')
 
     # Elküldjük az azonosítót az API-nak és megkapjuk a választ
-    api_response = ellenorzes_api(QR_beolvasott)
+    api_response = ellenorzes_api(azonosito)
 
     if api_response.get("status") == "ÉRVÉNYES":
         print("Az azonosító érvényes.")

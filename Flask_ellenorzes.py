@@ -3,7 +3,9 @@ from flask import Flask, request, jsonify
 app = Flask(__name__)
 
 # Példányosítjuk az eladott berletek listát
-eladott_berletek = ["000001", "berlet2", "berlet3"]
+eladott_berletek = ["000001"]
+
+
 
 @app.route('/ellenorzes', methods=['POST'])
 def ellenorzes():
