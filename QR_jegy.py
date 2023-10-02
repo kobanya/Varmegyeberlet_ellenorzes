@@ -1,6 +1,21 @@
 import cv2
 from pyzbar.pyzbar import decode
-import json
+import requests
+
+# Függvény az API hívásához
+def ellenorzes_api(azonosito):
+    api_url = "http://localhost:5000/ellenorzes"  # Az API szerver URL-je
+
+    try:
+        response = requests.post(api_url, json={"azonosito": azonosito})
+
+        if response.status_code == 200:
+            return response.json()
+        else:
+            return {"status": "HIBA", "message": "Az API hívás sikertelen."}
+
+    except Exception as e:
+        return {"status": "HIBA", "message": str(e)}
 
 # Kamera inicializálása
 cap = cv2.VideoCapture(0)
@@ -35,16 +50,13 @@ cv2.destroyAllWindows()
 if QR_beolvasott is not None:
     print(f'A beolvasott jegy: {QR_beolvasott}')
 
-    # JSON fájlba mentés
-    data = {
-        "nev": "Kiss Elemer",
-        "megye": "Pest varmegye",
-        "ervenyesseg": "2023.10.31",
-        "azonosito": "00001"
-    }
+    # Elküldjük az azonosítót az API-nak és megkapjuk a választ
+    api_response = ellenorzes_api(QR_beolvasott)
 
-    with open('buszberlet.json', 'w') as json_file:
-        json.dump(data, json_file)
-        print("Az adatok JSON fájlba mentve.")
+    if api_response.get("status") == "ÉRVÉNYES":
+        print("Az azonosító érvényes.")
+    else:
+        print("Az azonosító érvénytelen.")
+
 else:
     print('Nem találtam azonosítót')
