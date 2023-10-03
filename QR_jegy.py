@@ -23,6 +23,9 @@ cap = cv2.VideoCapture(0)
 # Változó az azonosító szám tárolásához
 azonosito = None
 
+# Kérjük meg a járművezetőt, hogy adja meg a vármegyét
+varmegye_kod = input("Kérem, adja meg a vármegye kódját (pl. PM): ")
+
 while azonosito is None:
     # Kamera képkockájának olvasása
     ret, frame = cap.read()
@@ -50,13 +53,17 @@ cv2.destroyAllWindows()
 if azonosito is not None:
     print(f'A beolvasott azonosító: {azonosito}')
 
-    # Elküldjük az azonosítót az API-nak és megkapjuk a választ
-    api_response = ellenorzes_api(azonosito)
+    # Ellenőrizzük, hogy a vármegye kód megegyezik-e az azonosító utolsó két karakterével
+    if azonosito[-2:] == varmegye_kod:
+        # Elküldjük az azonosítót az API-nak és megkapjuk a választ
+        api_response = ellenorzes_api(azonosito)
 
-    if api_response.get("status") == "ÉRVÉNYES":
-        print("A bérlet ÉRVÉNYES.")
+        if api_response.get("status") == "ÉRVÉNYES":
+            print("A bérlet ÉRVÉNYES.")
+        else:
+            print("Az azonosító érvénytelen.")
     else:
-        print("Az azonosító érvénytelen.")
+        print("Ebben a vármegyében ÉRVÉNYTELEN.")
 
 else:
     print('Nem találtam azonosítót')
