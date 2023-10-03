@@ -54,7 +54,7 @@ if azonosito is not None:
     print(f'A beolvasott azonosító: {azonosito}')
 
     # Ellenőrizzük, hogy a vármegye kód megegyezik-e az azonosító utolsó két karakterével
-    if azonosito[-2:] == varmegye_kod:
+    if azonosito[-2:] == varmegye_kod or azonosito[-2:] == "OB":
         # Elküldjük az azonosítót az API-nak és megkapjuk a választ
         api_response = ellenorzes_api(azonosito)
 
@@ -64,6 +64,8 @@ if azonosito is not None:
             print("Az azonosító érvénytelen.")
     else:
         print("Ebben a vármegyében ÉRVÉNYTELEN.")
+
+
 
 else:
     print('Nem találtam azonosítót')
