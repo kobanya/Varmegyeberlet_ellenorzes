@@ -61,7 +61,7 @@ if azonosito is not None:
         if api_response.get("status") == "ÉRVÉNYES":
             print("A bérlet ÉRVÉNYES.")
         else:
-            print("Az azonosító érvénytelen.")
+            print("A jegy ÉRVÉNYTELEN.")
     else:
         print("Ebben a vármegyében ÉRVÉNYTELEN.")
 
