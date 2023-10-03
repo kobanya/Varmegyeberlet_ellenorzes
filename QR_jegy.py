@@ -54,7 +54,7 @@ if azonosito is not None:
     api_response = ellenorzes_api(azonosito)
 
     if api_response.get("status") == "ÉRVÉNYES":
-        print("Az azonosító érvényes.")
+        print("A bérlet ÉRVÉNYES.")
     else:
         print("Az azonosító érvénytelen.")
 
