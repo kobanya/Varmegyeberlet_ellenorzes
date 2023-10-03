@@ -4,7 +4,7 @@ from datetime import datetime
 app = Flask(__name__)
 
 # Példányosítjuk az eladott berletek listát
-eladott_berletek = ["000001-20231031-PM" , "000002-20230912-PM"]
+eladott_berletek = ["000001-20231031-PM" , "000002-20230912-PM", "000002-20231112-PM", "000002-20231112-OB"]
 
 @app.route('/ellenorzes', methods=['POST'])
 def ellenorzes():
