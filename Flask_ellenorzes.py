@@ -1,10 +1,11 @@
 from flask import Flask, request, jsonify
 from datetime import datetime
+import csv
 
 app = Flask(__name__)
 
 # Példányosítjuk az eladott berletek listát
-eladott_berletek = ["000001-20231031-PM" , "000002-20230912-PM", "000002-20231112-PM", "000002-20231112-OB"]
+eladott_berletek = ["000001-20231031-PM", "000002-20230912-PM", "000002-20231112-PM", "000002-20231112-OB"]
 
 @app.route('/ellenorzes', methods=['POST'])
 def ellenorzes():
@@ -15,22 +16,25 @@ def ellenorzes():
         # Kinyerjük az azonosítót
         azonosito = data.get('azonosito', '')
 
-        # Ellenőrizzük, hogy az azonosító és a dátum érvényesek-e
-        if ervenyes_azonosito(azonosito):
-            eredmeny = {"status": "ÉRVÉNYES"}
-        else:
-            eredmeny = {"status": "ÉRVÉNYTELEN"}
+        # Az ellenőrzés eredményének meghatározása
+        eredmeny = ellenorzes_eredmenye(azonosito)
 
-        return jsonify(eredmeny)
+        # Az időpont formázása
+        idopont = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        # Jegyellenőrzés rögzítése CSV fájlba
+        rögzít_jegyellenorzes(idopont, azonosito, eredmeny)
+
+        return jsonify({"status": eredmeny})
 
     except Exception as e:
         return jsonify({"error": str(e)})
 
-def ervenyes_azonosito(azonosito):
+def ellenorzes_eredmenye(azonosito):
     try:
         # Ellenőrizzük, hogy az azonosító szerepel-e az eladott_berletek listában
         if azonosito not in eladott_berletek:
-            return False
+            return "ÉRVÉNYTELEN"
 
         # Kinyerjük a dátumot az azonosítóból (az első 8 karakter)
         datum_str = azonosito.split('-')[1]
@@ -48,12 +52,22 @@ def ervenyes_azonosito(azonosito):
 
         # Ellenőrizzük, hogy a dátum érvényes-e
         if mai_datum.year < ev or (mai_datum.year == ev and mai_datum.month < honap) or (mai_datum.year == ev and mai_datum.month == honap and mai_datum.day <= nap):
-            return True
+            return "ÉRVÉNYES"
 
-        return False
+        return "ÉRVÉNYTELEN"
 
     except Exception as e:
-        return False
+        return "HIBA"
+
+def rögzít_jegyellenorzes(idopont, azonosito, eredmeny):
+    try:
+        # CSV fájlba való rögzítés
+        with open('jegyellenorzes.csv', mode='a', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow([idopont, azonosito, eredmeny])
+
+    except Exception as e:
+        pass
 
 if __name__ == '__main__':
     app.run(debug=True)
